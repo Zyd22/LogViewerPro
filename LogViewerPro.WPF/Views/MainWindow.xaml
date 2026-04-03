@@ -1,0 +1,304 @@
+<Window x:Class="LogViewerPro.WPF.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:prism="http://prismlibrary.com/"
+        prism:ViewModelLocator.AutoWireViewModel="True"
+        mc:Ignorable="d"
+        Title="{Binding Title}" 
+        Height="800" Width="1400"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{StaticResource MaterialDesignFont}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto">
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="Indigo" SecondaryColor="Purple"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部工具栏 -->
+        <materialDesign:ColorZone Grid.Row="0" Mode="PrimaryMid" Padding="16">
+            <DockPanel>
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                    <materialDesign:PackIcon Kind="FileDocument" Width="32" Height="32" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                    <TextBlock Text="LogViewer Pro" FontSize="20" FontWeight="Bold" VerticalAlignment="Center"/>
+                    <TextBlock Text="v2.0" FontSize="12" VerticalAlignment="Bottom" Margin="8,0,0,2" Opacity="0.7"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <!-- AI模型状态 -->
+                    <Border Background="{DynamicResource SecondaryHueMidBrush}" 
+                            CornerRadius="4" Padding="8,4" Margin="8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Robot" Width="16" Height="16" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CurrentModel.Name, StringFormat='AI: {0}'}" 
+                                       Margin="4,0,0,0" VerticalAlignment="Center" FontSize="12"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 设置按钮 -->
+                    <Button ToolTip="设置" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="Settings" Width="24" Height="24"/>
+                    </Button>
+
+                    <!-- 关于按钮 -->
+                    <Button Command="{Binding AboutCommand}" ToolTip="关于" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="Information" Width="24" Height="24"/>
+                    </Button>
+
+                    <!-- 退出按钮 -->
+                    <Button Command="{Binding ExitCommand}" ToolTip="退出" Style="{StaticResource MaterialDesignFlatButton}">
+                        <materialDesign:PackIcon Kind="ExitToApp" Width="24" Height="24"/>
+                    </Button>
+                </StackPanel>
+
+                <TextBlock Text="{Binding StatusMessage}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </DockPanel>
+        </materialDesign:ColorZone>
+
+        <!-- 主内容区域 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 左侧导航菜单 -->
+            <materialDesign:Card Grid.Column="0" Margin="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 用户信息 -->
+                    <Border Grid.Row="0" Background="{DynamicResource PrimaryHueLightBrush}" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="管理员" FontWeight="Bold" FontSize="16"/>
+                            <TextBlock Text="admin@logviewer.local" FontSize="12" Opacity="0.7"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 菜单项 -->
+                    <ListBox Grid.Row="1" ItemsSource="{Binding MenuItems}" 
+                             SelectedIndex="0" Margin="0,8,0,0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Grid.Column="0" Text="{Binding Icon}" 
+                                               FontSize="24" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                                    
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="14"/>
+                                        <TextBlock Text="{Binding Description}" FontSize="11" Opacity="0.7"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem" BasedOn="{StaticResource MaterialDesignListBoxItem}">
+                                <Setter Property="Height" Value="70"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </Grid>
+            </materialDesign:Card>
+
+            <!-- 分割线 -->
+            <GridSplitter Grid.Column="1" Width="2" HorizontalAlignment="Center" VerticalAlignment="Stretch" 
+                          Background="{DynamicResource MaterialDesignDivider}"/>
+
+            <!-- 右侧工作区 -->
+            <materialDesign:Card Grid.Column="2" Margin="8" VerticalAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 工作区标题 -->
+                    <Border Grid.Row="0" Background="{DynamicResource MaterialDesignBackground}" Padding="16">
+                        <TextBlock Text="欢迎使用 LogViewer Pro" FontSize="24" FontWeight="Bold"/>
+                    </Border>
+
+                    <!-- 工作区内容 -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="32">
+                            <!-- 快速操作 -->
+                            <TextBlock Text="快速操作" FontSize="18" FontWeight="Bold" Margin="0,0,0,16"/>
+                            
+                            <UniformGrid Columns="3" Rows="2">
+                                <!-- 上传文件 -->
+                                <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                                        Height="80" Margin="8" ToolTip="上传日志或项目文件">
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="Upload" Width="32" Height="32"/>
+                                        <TextBlock Text="上传文件" Margin="0,8,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- 打开日志 -->
+                                <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                                        Height="80" Margin="8" ToolTip="打开并分析日志文件">
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="FileDocument" Width="32" Height="32"/>
+                                        <TextBlock Text="打开日志" Margin="0,8,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- AI分析 -->
+                                <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                                        Height="80" Margin="8" ToolTip="使用AI分析日志">
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="Robot" Width="32" Height="32"/>
+                                        <TextBlock Text="AI分析" Margin="0,8,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- 项目学习 -->
+                                <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                                        Height="80" Margin="8" ToolTip="分析C#项目">
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="Folder" Width="32" Height="32"/>
+                                        <TextBlock Text="项目学习" Margin="0,8,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- 数据转换 -->
+                                <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                                        Height="80" Margin="8" ToolTip="转换数据格式">
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="SwapHorizontal" Width="32" Height="32"/>
+                                        <TextBlock Text="数据转换" Margin="0,8,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- 帮助文档 -->
+                                <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                                        Height="80" Margin="8" ToolTip="查看帮助文档">
+                                    <StackPanel>
+                                        <materialDesign:PackIcon Kind="HelpCircle" Width="32" Height="32"/>
+                                        <TextBlock Text="帮助文档" Margin="0,8,0,0"/>
+                                    </StackPanel>
+                                </Button>
+                            </UniformGrid>
+
+                            <!-- 最近文件 -->
+                            <TextBlock Text="最近文件" FontSize="18" FontWeight="Bold" Margin="0,32,0,16"/>
+                            
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False"
+                                      HeadersVisibility="Column" GridLinesVisibility="Horizontal">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="文件名" Binding="{Binding FileName}" Width="2*"/>
+                                    <DataGridTextColumn Header="类型" Binding="{Binding Type}" Width="1*"/>
+                                    <DataGridTextColumn Header="大小" Binding="{Binding Size}" Width="1*"/>
+                                    <DataGridTextColumn Header="修改时间" Binding="{Binding ModifiedTime}" Width="1.5*"/>
+                                    <DataGridTemplateColumn Header="操作" Width="1*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <Button ToolTip="打开" Style="{StaticResource MaterialDesignFlatButton}">
+                                                        <materialDesign:PackIcon Kind="OpenInNew" Width="16"/>
+                                                    </Button>
+                                                    <Button ToolTip="删除" Style="{StaticResource MaterialDesignFlatButton}">
+                                                        <materialDesign:PackIcon Kind="Delete" Width="16"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <!-- 统计信息 -->
+                            <TextBlock Text="统计信息" FontSize="18" FontWeight="Bold" Margin="0,32,0,16"/>
+                            
+                            <UniformGrid Columns="4">
+                                <materialDesign:Card Padding="16" Margin="8">
+                                    <StackPanel>
+                                        <TextBlock Text="已分析日志" FontSize="12" Opacity="0.7"/>
+                                        <TextBlock Text="1,234" FontSize="24" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </materialDesign:Card>
+
+                                <materialDesign:Card Padding="16" Margin="8">
+                                    <StackPanel>
+                                        <TextBlock Text="已分析项目" FontSize="12" Opacity="0.7"/>
+                                        <TextBlock Text="15" FontSize="24" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </materialDesign:Card>
+
+                                <materialDesign:Card Padding="16" Margin="8">
+                                    <StackPanel>
+                                        <TextBlock Text="AI对话次数" FontSize="12" Opacity="0.7"/>
+                                        <TextBlock Text="89" FontSize="24" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </materialDesign:Card>
+
+                                <materialDesign:Card Padding="16" Margin="8">
+                                    <StackPanel>
+                                        <TextBlock Text="数据转换" FontSize="12" Opacity="0.7"/>
+                                        <TextBlock Text="42" FontSize="24" FontWeight="Bold"/>
+                                    </StackPanel>
+                                </materialDesign:Card>
+                            </UniformGrid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </materialDesign:Card>
+        </Grid>
+
+        <!-- 底部状态栏 -->
+        <materialDesign:ColorZone Grid.Row="2" Mode="PrimaryDark" Padding="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <ProgressBar Width="100" Height="16" IsIndeterminate="{Binding IsBusy}" Margin="8,0"/>
+                    <TextBlock Text="{Binding StatusMessage}" VerticalAlignment="Center" Margin="8,0"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Text="© 2026 LogViewer Pro - 工控上位机分析工具"/>
+
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Memory" Width="16" Height="16" VerticalAlignment="Center"/>
+                    <TextBlock Text="内存: 45 MB" VerticalAlignment="Center" Margin="4,0,16,0"/>
+                    
+                    <materialDesign:PackIcon Kind="Clock" Width="16" Height="16" VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding CurrentTime}" VerticalAlignment="Center" Margin="4,0"/>
+                </StackPanel>
+            </Grid>
+        </materialDesign:ColorZone>
+    </Grid>
+</Window>

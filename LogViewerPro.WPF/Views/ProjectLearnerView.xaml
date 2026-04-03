@@ -1,0 +1,325 @@
+<UserControl x:Class="LogViewerPro.WPF.Views.ProjectLearnerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:prism="http://prismlibrary.com/"
+             prism:ViewModelLocator.AutoWireViewModel="True">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- 上传区域 -->
+        <materialDesign:Card Grid.Row="0" Padding="16" Margin="8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- 上传提示 -->
+                <Border Grid.Column="0" BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                        BorderThickness="2" BorderDashArray="4,2" CornerRadius="8"
+                        Background="{DynamicResource MaterialDesignCardBackground}"
+                        Padding="32" AllowDrop="True">
+                    <StackPanel HorizontalAlignment="Center">
+                        <materialDesign:PackIcon Kind="CloudUpload" Width="64" Height="64"
+                                                 HorizontalAlignment="Center" Foreground="{DynamicResource PrimaryHueMidBrush}"/>
+                        
+                        <TextBlock Text="拖拽项目文件到此处或点击上传" 
+                                   FontSize="18" FontWeight="Bold" Margin="0,16,0,8"
+                                   HorizontalAlignment="Center"/>
+                        
+                        <TextBlock Text="支持 .zip, .rar, .7z 格式，最大 2GB"
+                                   FontSize="12" Opacity="0.7" HorizontalAlignment="Center"
+                                   Margin="0,0,0,16"/>
+                        
+                        <Button Style="{StaticResource MaterialDesignRaisedButton}" HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FolderOpen" Width="20"/>
+                                <TextBlock Text="选择文件" Margin="8,0,0,0"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- 上传进度 -->
+                        <StackPanel Margin="0,16,0,0" Visibility="Collapsed">
+                            <TextBlock Text="正在上传: test_project.zip" HorizontalAlignment="Center"/>
+                            <ProgressBar Value="65" Maximum="100" Height="8" Margin="0,8,0,0"/>
+                            <TextBlock Text="65% - 324MB / 500MB" FontSize="11" Opacity="0.7"
+                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- 分析选项 -->
+                <StackPanel Grid.Column="1" Margin="16,0,0,0" Width="250">
+                    <TextBlock Text="分析选项" FontWeight="Bold" FontSize="16" Margin="0,0,0,12"/>
+                    
+                    <CheckBox Content="扫描IoT设备" IsChecked="True" Margin="0,0,0,8"/>
+                    <CheckBox Content="检测工业协议" IsChecked="True" Margin="0,0,0,8"/>
+                    <CheckBox Content="提取API接口" IsChecked="True" Margin="0,0,0,8"/>
+                    <CheckBox Content="分析架构模式" IsChecked="True" Margin="0,0,0,8"/>
+                    <CheckBox Content="生成学习文档" IsChecked="True" Margin="0,0,0,8"/>
+                    <CheckBox Content="提取代码片段" Margin="0,0,0,8"/>
+                    <CheckBox Content="依赖关系分析" Margin="0,0,0,8"/>
+
+                    <Button Style="{StaticResource MaterialDesignRaisedButton}" 
+                            Margin="0,16,0,0" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Play" Width="20"/>
+                            <TextBlock Text="开始分析" Margin="8,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- 分析结果 -->
+        <materialDesign:Card Grid.Row="1" Margin="8" VerticalAlignment="Stretch">
+            <TabControl materialDesign:ColorZoneAssist.Mode="PrimaryMid">
+                <!-- 项目概览 -->
+                <TabItem Header="项目概览">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                                <TextBlock Text="项目信息" FontWeight="Bold" FontSize="18" Margin="0,0,0,16"/>
+                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="项目名称:" Margin="0,0,0,8"/>
+                                        <TextBlock Text="目标框架:" Margin="0,0,0,8"/>
+                                        <TextBlock Text="项目类型:" Margin="0,0,0,8"/>
+                                        <TextBlock Text="项目数量:" Margin="0,0,0,8"/>
+                                        <TextBlock Text="代码文件:" Margin="0,0,0,8"/>
+                                        <TextBlock Text="代码行数:" Margin="0,0,0,8"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="1" Margin="16,0,0,0">
+                                        <TextBlock Text="LogViewerPro" FontWeight="Bold" Margin="0,0,0,8"/>
+                                        <TextBlock Text=".NET 6.0" Margin="0,0,0,8"/>
+                                        <TextBlock Text="Web应用" Margin="0,0,0,8"/>
+                                        <TextBlock Text="3个" Margin="0,0,0,8"/>
+                                        <TextBlock Text="45个" Margin="0,0,0,8"/>
+                                        <TextBlock Text="12,345行" Margin="0,0,0,8"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <TextBlock Text="技术栈" FontWeight="Bold" FontSize="18" Margin="0,24,0,16"/>
+                                
+                                <ItemsControl>
+                                    <ItemsControl.Items>
+                                        <Border Background="{DynamicResource PrimaryHueLightBrush}"
+                                                CornerRadius="4" Padding="8,4" Margin="0,0,8,8" Width="Auto" HorizontalAlignment="Left">
+                                            <TextBlock Text="ASP.NET Core" Foreground="White"/>
+                                        </Border>
+                                        <Border Background="{DynamicResource SecondaryHueLightBrush}"
+                                                CornerRadius="4" Padding="8,4" Margin="0,0,8,8" Width="Auto" HorizontalAlignment="Left">
+                                            <TextBlock Text="Entity Framework Core" Foreground="White"/>
+                                        </Border>
+                                        <Border Background="{DynamicResource SecondaryHueMidBrush}"
+                                                CornerRadius="4" Padding="8,4" Margin="0,0,8,8" Width="Auto" HorizontalAlignment="Left">
+                                            <TextBlock Text="SQLite" Foreground="White"/>
+                                        </Border>
+                                    </ItemsControl.Items>
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="架构模式" FontWeight="Bold" FontSize="18" Margin="0,0,0,16"/>
+                                
+                                <ItemsControl>
+                                    <ItemsControl.Items>
+                                        <CheckBox Content="MVC架构" IsChecked="True" IsEnabled="False" Margin="0,0,0,8"/>
+                                        <CheckBox Content="依赖注入" IsChecked="True" IsEnabled="False" Margin="0,0,0,8"/>
+                                        <CheckBox Content="仓储模式" IsChecked="True" IsEnabled="False" Margin="0,0,0,8"/>
+                                        <CheckBox Content="分层架构" IsChecked="True" IsEnabled="False" Margin="0,0,0,8"/>
+                                    </ItemsControl.Items>
+                                </ItemsControl>
+
+                                <TextBlock Text="IoT设备检测" FontWeight="Bold" FontSize="18" Margin="0,24,0,16"/>
+                                
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <materialDesign:Card Grid.Column="0" Padding="12" Margin="0,0,8,0">
+                                        <StackPanel>
+                                            <materialDesign:PackIcon Kind="RaspberryPi" Width="32" Height="32"
+                                                                     HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Raspberry Pi" FontWeight="Bold" 
+                                                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            <TextBlock Text="已检测到" FontSize="11" Foreground="Green"
+                                                       HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </materialDesign:Card>
+
+                                    <materialDesign:Card Grid.Column="1" Padding="12" Margin="8,0">
+                                        <StackPanel>
+                                            <materialDesign:PackIcon Kind="Chip" Width="32" Height="32"
+                                                                     HorizontalAlignment="Center"/>
+                                            <TextBlock Text="Arduino" FontWeight="Bold" 
+                                                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            <TextBlock Text="已检测到" FontSize="11" Foreground="Green"
+                                                       HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </materialDesign:Card>
+
+                                    <materialDesign:Card Grid.Column="2" Padding="12" Margin="8,0,0,0">
+                                        <StackPanel>
+                                            <materialDesign:PackIcon Kind="Network" Width="32" Height="32"
+                                                                     HorizontalAlignment="Center"/>
+                                            <TextBlock Text="ESP32" FontWeight="Bold" 
+                                                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            <TextBlock Text="未检测到" FontSize="11" Opacity="0.5"
+                                                       HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </materialDesign:Card>
+                                </Grid>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- IoT详情 -->
+                <TabItem Header="IoT详情">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="工业协议" FontWeight="Bold" FontSize="18" Margin="0,0,0,16"/>
+                            
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="协议名称" Binding="{Binding Protocol}" Width="150"/>
+                                    <DataGridTextColumn Header="使用次数" Binding="{Binding Count}" Width="100"/>
+                                    <DataGridTextColumn Header="相关文件" Binding="{Binding Files}" Width="*"/>
+                                    <DataGridTemplateColumn Header="示例代码" Width="Auto">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}" ToolTip="查看示例">
+                                                    <materialDesign:PackIcon Kind="CodeTags" Width="16"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+
+                            <TextBlock Text="硬件平台" FontWeight="Bold" FontSize="18" Margin="0,24,0,16"/>
+                            
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="平台" Binding="{Binding Platform}" Width="150"/>
+                                    <DataGridTextColumn Header="引用次数" Binding="{Binding References}" Width="100"/>
+                                    <DataGridTextColumn Header="主要用途" Binding="{Binding Usage}" Width="*"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- API接口 -->
+                <TabItem Header="API接口">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="公共API (45个)" FontWeight="Bold" FontSize="18" Margin="0,0,0,16"/>
+                            
+                            <DataGrid AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="类名" Binding="{Binding ClassName}" Width="200"/>
+                                    <DataGridTextColumn Header="成员名" Binding="{Binding MemberName}" Width="200"/>
+                                    <DataGridTextColumn Header="类型" Binding="{Binding MemberType}" Width="100"/>
+                                    <DataGridTextColumn Header="签名" Binding="{Binding Signature}" Width="*"/>
+                                    <DataGridTemplateColumn Header="文档" Width="Auto">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Style="{StaticResource MaterialDesignFlatButton}" ToolTip="生成文档">
+                                                    <materialDesign:PackIcon Kind="FileDocument" Width="16"/>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+
+                <!-- 学习文档 -->
+                <TabItem Header="学习文档">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                <Button Style="{StaticResource MaterialDesignRaisedButton}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="FileDownload" Width="20"/>
+                                        <TextBlock Text="导出文档" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <Button Style="{StaticResource MaterialDesignFlatButton}" Margin="16,0,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Refresh" Width="20"/>
+                                        <TextBlock Text="重新生成" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+
+                            <Border Background="{DynamicResource MaterialDesignCardBackground}"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                    BorderThickness="1" CornerRadius="4" Padding="16">
+                                <TextBlock Text="# LogViewerPro 项目学习文档
+
+## 项目概述
+LogViewerPro 是一个基于 ASP.NET Core 6.0 的Web应用程序...
+
+## 技术栈
+- ASP.NET Core 6.0
+- Entity Framework Core
+- SQLite数据库
+- Bootstrap 5前端
+
+## 架构设计
+项目采用经典的三层架构...
+
+## IoT设备支持
+项目支持以下IoT设备:
+1. Raspberry Pi - GPIO控制
+2. Arduino - 串口通信
+3. ESP32 - WiFi连接
+
+## 工业协议
+支持的工业协议:
+- I2C - 设备间通信
+- SPI - 高速数据传输
+- UART - 串口通信
+- Modbus - 工业标准协议
+
+## API文档
+..." TextWrapping="Wrap"/>
+                            </Border>
+                        </StackPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </materialDesign:Card>
+    </Grid>
+</UserControl>
